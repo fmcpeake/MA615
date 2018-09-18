@@ -1,0 +1,36 @@
+---
+title: "MS 615 HW 1"
+author: "Fionnuala McPeake"
+date: "September 17, 2018"
+output: pdf_document
+---
+
+```{r setup, include=TRUE}
+library(knitr)
+library(kableExtra)
+```
+
+## R Markdown
+
+In this situation we are asked to predict the likelihood that a book, containing between one and 50 pages, will have k or more misprints, given that it was produced by a printer who averages two misprints per page. 
+
+To narrow the scope of our investigation, we will be looking at the possibility of having one to ten mistakes per book. This will product a 50x10 table, which we set up for using the as.data.frame function. 
+
+To begin the calculations we use the Poisson distribution with a Lambda of 2. The Poisson distribution is used here as we are looking for the probability of an occurance with a known frequency, and the occurances are independent of eachother. The "ppois" is subtracted from one to get the probability for books of all lengths up to and including the specified length. 
+
+This poisson distribution is then read into the binomial distribution, as there are between one and 50 pages in a particular book, and we are trying to find if there are x mistakes for the given number of pages. 
+
+This binomial distribution is then read into a table, and in turn read into the kable table reader, producing the final table. 
+
+```{r }
+table <- as.data.frame(matrix(ncol = 10, nrow = 50, dimnames = list(c(1:50), c(1:10))))
+for (k in 1:50) {
+  for (r in 1:10) {
+    p_k2 <- 1 - ppois(r, lambda = 2)
+    table[k, r] <- pbinom(k, 50, prob = p_k2)
+  }
+}
+knitr::include_graphics(path = 'RClass/HW1Image')
+kableExtra::kable(digits=10, x=table, row.names=TRUE) 
+```
+
